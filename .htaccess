@@ -1,0 +1,10 @@
+# Security: Block access to sensitive files
+<Files "data.json">
+    Require all denied
+</Files>
+
+<Files "*.json">
+    Require all denied
+</Files>
+
+
