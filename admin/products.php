@@ -10,19 +10,13 @@ $config = require __DIR__ . '/../inc/config.php';
 
 // Ambil data produk
 $products = get_products();
-
-// Ambil data penjualan untuk summary
-$sales_summary = get_sales_summary();
-
-// Hitung total keuntungan
-$total_profit = get_total_profit();
 ?>
 <!doctype html>
 <html lang="id">
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Admin Dashboard</title>
+	<title>Daftar Produk - Admin</title>
 	<style>
 		/* Custom Alert/Modal Style */
 		.custom-modal-overlay {
@@ -44,72 +38,6 @@ $total_profit = get_total_profit();
 			width: 95vw;
 			max-width: 420px;
 			box-shadow: var(--shadow-xl);
-		}
-
-		/* Menu Grid Styles */
-		.menu-grid {
-			display: grid;
-			grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-			gap: 16px;
-			margin-top: 16px;
-		}
-
-		.menu-item {
-			background: white;
-			border: 1px solid #e5e7eb;
-			border-radius: 12px;
-			padding: 20px;
-			box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-			transition: all 0.2s;
-			cursor: pointer;
-			display: flex;
-			align-items: center;
-			gap: 16px;
-		}
-
-		.menu-item:hover {
-			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-			transform: translateY(-2px);
-		}
-
-		.menu-icon {
-			font-size: 32px;
-			width: 60px;
-			height: 60px;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			background: #f3f4f6;
-			border-radius: 12px;
-			flex-shrink: 0;
-		}
-
-		.menu-text h4 {
-			margin: 0 0 4px 0;
-			font-size: 16px;
-			font-weight: 600;
-			color: #111827;
-		}
-
-		.menu-text p {
-			margin: 0;
-			font-size: 14px;
-			color: #6b7280;
-		}
-
-		/* Responsive adjustments */
-		@media (max-width: 768px) {
-			.menu-grid {
-				grid-template-columns: 1fr;
-			}
-			.menu-item {
-				padding: 16px;
-			}
-			.menu-icon {
-				width: 50px;
-				height: 50px;
-				font-size: 24px;
-			}
 		}
 
 		/* Responsive Table Styles for Admin */
@@ -146,73 +74,75 @@ $total_profit = get_total_profit();
 <body>
 	<div class="container">
 		<div class="header">
-			<h2>Admin Dashboard</h2>
+			<h2>Daftar Produk</h2>
 		</div>
+		<a href="index.php" class="button secondary" style="margin-top: 16px;">← Kembali ke Dashboard</a>
 
-		<!-- Summary Cards -->
-		<div class="card-grid mt-4">
-			<div class="card">
-				<h3>Total Produk</h3>
-				<p style="font-size: 24px; margin: 8px 0;"><?php echo count($products); ?></p>
-			</div>
-			<div class="card">
-				<h3>Total Keuntungan</h3>
-				<p style="font-size: 24px; margin: 8px 0;"><?php echo rupiah($total_profit); ?></p>
-			</div>
-		</div>
-
-		<!-- Menu Grid -->
+		<!-- Daftar Produk -->
 		<div class="mt-6">
-			<h3>Menu Admin</h3>
-			<div class="menu-grid">
-				<div class="menu-item" onclick="window.location.href='sales.php'">
-					<div class="menu-icon">📊</div>
-					<div class="menu-text">
-						<h4>Produk yang Laku</h4>
-						<p>Kelola penjualan produk</p>
-					</div>
-				</div>
-				<div class="menu-item" onclick="window.location.href='products.php'">
-					<div class="menu-icon">📦</div>
-					<div class="menu-text">
-						<h4>Daftar Produk</h4>
-						<p>Kelola produk dan stok</p>
-					</div>
-				</div>
-				<div class="menu-item" onclick="window.location.href='../'">
-					<div class="menu-icon">🌐</div>
-					<div class="menu-text">
-						<h4>Lihat Website</h4>
-						<p>Kunjungi toko online</p>
-					</div>
-				</div>
-				<div class="menu-item" onclick="openResetSalesModal()">
-					<div class="menu-icon">🔄</div>
-					<div class="menu-text">
-						<h4>Reset Data</h4>
-						<p>Reset data penjualan</p>
-					</div>
-				</div>
-
-				<div class="menu-item" onclick="window.location.href='export_excel.php'">
-					<div class="menu-icon">📊</div>
-					<div class="menu-text">
-						<h4>Export Excel</h4>
-						<p>Unduh data Excel</p>
-					</div>
-				</div>
-				<div class="menu-item" onclick="window.location.href='logout.php'">
-					<div class="menu-icon">🚪</div>
-					<div class="menu-text">
-						<h4>Logout</h4>
-						<p>Keluar dari admin</p>
-					</div>
+			<div class="flex admin-section-header">
+				<h3>Daftar Produk</h3>
+				<div class="flex" style="gap: 8px;">
+					<a href="slider_management.php" class="button secondary">Kelola Slider</a>
+					<a href="product_add.php" class="button">Tambah Produk</a>
 				</div>
 			</div>
+			<div class="mt-2" style="max-width: 400px; margin-bottom: 16px;">
+				<input type="text" id="productsSearchInput" class="input" placeholder="Cari produk di tabel ini...">
+			</div>
+			
+			<?php if ($products): ?>
+				<div class="card">
+					<div class="table-responsive">
+					<table class="table" id="productsTable">
+						<thead>
+							<tr>
+								<th>Nama</th>
+								<th>Harga</th>
+								<th>Harga Beli</th>
+								<th>Diskon</th>
+								<th>Stok</th>
+								<th>Status</th>
+								<th>Aksi</th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php foreach ($products as $p): ?>
+								<tr>
+									<td data-label="Nama"><?php echo htmlspecialchars($p['name']); ?></td>
+									<td data-label="Harga"><?php echo rupiah($p['price']); ?></td>
+									<td data-label="Harga Beli"><?php echo rupiah($p['cost']); ?></td>
+									<td data-label="Diskon">
+										<?php if (isset($p['discount_active']) && $p['discount_active'] == 1 && isset($p['discount_percentage']) && $p['discount_percentage'] > 0): ?>
+											<?php echo $p['discount_percentage']; ?>%
+										<?php else: ?>
+											-
+										<?php endif; ?>
+									</td>
+									<td data-label="Stok"><?php echo (int)$p['stock']; ?></td>
+									<td data-label="Status">
+										<span class="badge" style="background: <?php echo $p['active'] ? '#dcfce7' : '#fee2e2'; ?>; color: <?php echo $p['active'] ? '#166534' : '#991b1b'; ?>;">
+											<?php echo $p['active'] ? 'Aktif' : 'Nonaktif'; ?>
+										</span>
+									</td>
+									<td data-label="Aksi">
+										<a href="product_edit.php?id=<?php echo $p['id']; ?>" class="button secondary">Edit</a>
+										<button onclick="openUpdateStockModal('<?php echo $p['id']; ?>', '<?php echo htmlspecialchars(addslashes($p['name'])); ?>', '<?php echo (int)$p['stock']; ?>')" class="button success">Update Stok</button>
+										<button onclick="openDeleteModal('<?php echo $p['id']; ?>', '<?php echo htmlspecialchars(addslashes($p['name'])); ?>')" class="button danger">Hapus</button>
+									</td>
+								</tr>
+							<?php endforeach; ?>
+						</tbody>
+					</table>
+					</div>
+				</div>
+			<?php else: ?>
+				<div class="card">
+					<p class="center">Belum ada produk</p>
+				</div>
+			<?php endif; ?>
 		</div>
 	</div>
-
-
 
 	<!-- Modal untuk konfirmasi hapus produk -->
 	<div id="deleteModal" class="custom-modal-overlay" style="display: none;">
@@ -222,18 +152,6 @@ $total_profit = get_total_profit();
 			<div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px;">
 				<button onclick="closeDeleteModal()" class="button secondary">Batal</button>
 				<button onclick="confirmDelete()" class="button danger">Hapus</button>
-			</div>
-		</div>
-	</div>
-
-	<!-- Modal untuk konfirmasi reset penjualan -->
-	<div id="resetSalesModal" class="custom-modal-overlay" style="display: none;">
-		<div class="custom-modal-box">
-			<h3 style="margin: 0 0 16px 0;">Konfirmasi Reset</h3>
-			<p>Apakah Anda yakin ingin mereset semua data penjualan? Tindakan ini tidak dapat dibatalkan.</p>
-			<div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px;">
-				<button onclick="closeResetSalesModal()" class="button secondary">Batal</button>
-				<button onclick="confirmResetSales()" class="button danger">Ya, Reset</button>
 			</div>
 		</div>
 	</div>
@@ -266,12 +184,6 @@ $total_profit = get_total_profit();
 	</div>
 
 	<script>
-	let currentProductId = null;
-	let currentProductName = '';
-	let currentStock = 0;
-
-
-
 	// --- DELETE MODAL ---
 	const deleteModal = document.getElementById('deleteModal');
 	let productToDeleteId = null;
@@ -353,38 +265,6 @@ $total_profit = get_total_profit();
 	}
 
 
-	// --- RESET SALES ---
-	const resetSalesModal = document.getElementById('resetSalesModal');
-
-	function openResetSalesModal() {
-		resetSalesModal.style.display = 'flex';
-	}
-
-	function closeResetSalesModal() {
-		resetSalesModal.style.display = 'none';
-	}
-
-	function confirmResetSales() {
-		fetch('reset_sales.php', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-			body: 'confirm=1'
-		})
-		.then(response => response.json())
-		.then(data => {
-			if (data.success) {
-				showCustomAlert('Data penjualan berhasil direset. Halaman akan dimuat ulang.', 'Sukses');
-				setTimeout(() => location.reload(), 2000);
-			} else {
-				showCustomAlert(data.message || 'Gagal mereset data.', 'Error');
-			}
-		})
-		.catch(error => {
-			showCustomAlert('Terjadi kesalahan koneksi saat mereset data.', 'Error');
-		});
-		closeResetSalesModal();
-	}
-
 	// --- CUSTOM ALERT ---
 	const customAlertModal = document.getElementById('customAlertModal');
 
@@ -397,8 +277,6 @@ $total_profit = get_total_profit();
 	function closeCustomAlert() {
 		customAlertModal.style.display = 'none';
 	}
-
-
 
 	// --- TABLE SEARCH FUNCTIONALITY ---
 	function setupTableSearch(inputId, tableId) {
@@ -426,7 +304,8 @@ $total_profit = get_total_profit();
 		});
 	}
 
-
+	// Inisialisasi fungsi pencarian
+	setupTableSearch('productsSearchInput', 'productsTable');
 	</script>
 </body>
 </html>
